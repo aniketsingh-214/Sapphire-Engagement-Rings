@@ -17,7 +17,7 @@ export default function UserPanel({ open, onClose }) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="relative w-full max-w-sm rounded-lg bg-cream p-5 shadow-xl sm:p-8">
         <button onClick={onClose} aria-label="Close" className="absolute right-3 top-3 sm:right-4 sm:top-4">
