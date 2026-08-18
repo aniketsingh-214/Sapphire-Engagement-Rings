@@ -1,98 +1,206 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useStore } from "../context/StoreContext";
 import { BagIcon, HeartIcon, UserIcon, SearchIcon, MenuIcon, CloseIcon } from "./icons";
 
 const nav = ["Engagement Rings", "Wedding Rings", "Diamonds", "Gemstones", "Jewelry", "Gifts", "About"];
 
-export default function Header({ onOpenCart, onOpenWishlist, onOpenUser }) {
+export default function Header({ onOpenCart, onOpenWishlist, onOpenUser, searchQuery, onSearchChange }) {
   const { cartCount, wishlist } = useStore();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (searchOpen) inputRef.current?.focus();
+  }, [searchOpen]);
+
+  function handleSearchToggle() {
+    if (searchOpen) {
+      setSearchOpen(false);
+      onSearchChange("");
+    } else {
+      setSearchOpen(true);
+    }
+  }
 
   return (
     <>
-      {/* ── Sticky header bar ── */}
-      <header className="sticky top-0 z-30 border-b border-ink/10 bg-cream/95 backdrop-blur">
-        <div className="bg-ink py-1.5 text-center text-[10px] tracking-wide text-cream sm:py-2 sm:text-xs">
-          Complimentary shipping and lifetime warranty on every piece.
-        </div>
+      {/* ── Gradient announcement bar ── */}
+      <div className="bg-gradient-to-r from-sapphireDark via-sapphire to-sapphireLight py-2 text-center text-2xs tracking-[0.18em] text-white/90 uppercase font-medium sm:text-xs">
+        Complimentary Shipping &amp; Lifetime Warranty on Every Piece
+      </div>
 
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
-          <button className="lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu">
-            <MenuIcon className="h-6 w-6" />
+      {/* ── Sticky header ── */}
+      <header className="sticky top-0 z-30 bg-cream/96 backdrop-blur-md border-b border-mist">
+
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:py-4">
+
+          {/* Hamburger — mobile */}
+          <button
+            className="lg:hidden p-2 rounded-full hover:bg-sand transition-colors"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open menu"
+          >
+            <MenuIcon className="h-5 w-5 text-ink" />
           </button>
 
+          {/* Brand wordmark */}
           <div className="flex-1 text-center lg:flex-none lg:text-left">
-            <a href="#" className="font-serif text-xl tracking-[0.2em] sm:text-2xl lg:text-3xl">LUMIÈRE</a>
+            <a
+              href="#"
+              className="font-serif text-2xl tracking-[0.25em] text-ink hover:text-gold transition-colors duration-300 sm:text-3xl"
+            >
+              LUMIÈRE
+            </a>
           </div>
 
-          <nav className="hidden lg:flex lg:gap-7">
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex lg:gap-8 xl:gap-10">
             {nav.map((item) => (
-              <a key={item} href="#collection" className="text-sm tracking-wide text-ink/80 transition hover:text-sapphire">
+              <a
+                key={item}
+                href="#collection"
+                className="nav-link text-sm font-medium tracking-wide text-ink/80 hover:text-ink transition-colors duration-200"
+              >
                 {item}
               </a>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3 sm:gap-4">
-            <button className="hidden sm:block" aria-label="Search"><SearchIcon className="h-5 w-5" /></button>
-            <button onClick={onOpenUser} aria-label="Account"><UserIcon className="h-5 w-5" /></button>
-            <button onClick={onOpenWishlist} aria-label="Wishlist" className="relative">
+          {/* Action icons */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Search */}
+            <button
+              onClick={handleSearchToggle}
+              aria-label={searchOpen ? "Close search" : "Search"}
+              className="p-2 rounded-full hover:bg-sand transition-colors duration-200 text-ink/70 hover:text-ink"
+            >
+              {searchOpen
+                ? <CloseIcon className="h-5 w-5" />
+                : <SearchIcon className="h-5 w-5" />}
+            </button>
+
+            {/* Account */}
+            <button
+              onClick={onOpenUser}
+              aria-label="Account"
+              className="p-2 rounded-full hover:bg-sand transition-colors duration-200 text-ink/70 hover:text-ink"
+            >
+              <UserIcon className="h-5 w-5" />
+            </button>
+
+            {/* Wishlist */}
+            <button
+              onClick={onOpenWishlist}
+              aria-label="Wishlist"
+              className="relative p-2 rounded-full hover:bg-sand transition-colors duration-200 text-ink/70 hover:text-ink"
+            >
               <HeartIcon className="h-5 w-5" />
               {wishlist.length > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-sapphire text-[10px] text-white">
+                <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-sapphire text-[10px] font-semibold text-white ring-2 ring-cream">
                   {wishlist.length}
                 </span>
               )}
             </button>
-            <button onClick={onOpenCart} aria-label="Bag" className="relative">
+
+            {/* Cart */}
+            <button
+              onClick={onOpenCart}
+              aria-label="Shopping bag"
+              className="relative p-2 rounded-full hover:bg-sand transition-colors duration-200 text-ink/70 hover:text-ink"
+            >
               <BagIcon className="h-5 w-5" />
               {cartCount > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-sapphire text-[10px] text-white">
+                <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-sapphire text-[10px] font-semibold text-white ring-2 ring-cream">
                   {cartCount}
                 </span>
               )}
             </button>
           </div>
         </div>
+
+        {/* ── Animated search bar ── */}
+        <div
+          className={`overflow-hidden border-t border-mist transition-all duration-300 ease-in-out ${
+            searchOpen ? "max-h-20 opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+          }`}
+        >
+          <div className="mx-auto flex max-w-2xl items-center gap-3 px-5 py-3">
+            <SearchIcon className="h-4 w-4 shrink-0 text-gold" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Search by name, metal, or shape…"
+              className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink/35 tracking-wide"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => onSearchChange("")}
+                aria-label="Clear"
+                className="shrink-0 text-ink/40 hover:text-ink transition-colors"
+              >
+                <CloseIcon className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        </div>
       </header>
 
-      {/* ── Mobile nav — rendered OUTSIDE <header> so it escapes the z-30 stacking context ── */}
+      {/* ── Mobile nav drawer ── */}
       <div className={`fixed inset-0 z-[9999] lg:hidden ${mobileOpen ? "" : "pointer-events-none"}`}>
-        {/* Dark overlay */}
+        {/* Overlay */}
         <div
-          className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${mobileOpen ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 bg-ink/60 backdrop-blur-sm transition-opacity duration-300 ${mobileOpen ? "opacity-100" : "opacity-0"}`}
           onClick={() => setMobileOpen(false)}
         />
 
-        {/* Slide-in panel */}
-        <div className={`absolute left-0 top-0 h-full w-full bg-cream shadow-2xl transition-transform duration-300 sm:w-80 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
-          <div className="flex h-full flex-col">
-            {/* Panel header */}
-            <div className="flex items-center justify-between border-b border-ink/10 px-5 py-4">
-              <span className="font-serif text-xl tracking-widest">LUMIÈRE</span>
-              <button onClick={() => setMobileOpen(false)} aria-label="Close menu">
-                <CloseIcon className="h-6 w-6" />
+        {/* Panel */}
+        <div className={`absolute left-0 top-0 h-full w-4/5 max-w-xs bg-cream shadow-2xl transition-transform duration-300 flex flex-col ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
+
+          {/* Panel header */}
+          <div className="flex items-center justify-between border-b border-mist px-5 py-5">
+            <span className="font-serif text-2xl tracking-[0.25em] text-ink">LUMIÈRE</span>
+            <button onClick={() => setMobileOpen(false)} aria-label="Close" className="p-1.5 rounded-full hover:bg-sand">
+              <CloseIcon className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Mobile search */}
+          <div className="flex items-center gap-3 border-b border-mist px-5 py-3 bg-sand/40">
+            <SearchIcon className="h-4 w-4 shrink-0 text-gold" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Search rings…"
+              className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink/40"
+            />
+            {searchQuery && (
+              <button onClick={() => onSearchChange("")}>
+                <CloseIcon className="h-4 w-4 text-ink/40" />
               </button>
-            </div>
+            )}
+          </div>
 
-            {/* Nav links */}
-            <nav className="flex flex-col overflow-y-auto px-5 py-4">
-              {nav.map((item) => (
-                <a
-                  key={item}
-                  href="#collection"
-                  onClick={() => setMobileOpen(false)}
-                  className="border-b border-ink/10 py-4 text-base font-medium text-ink/80 transition hover:text-sapphire"
-                >
-                  {item}
-                </a>
-              ))}
-            </nav>
+          {/* Nav links */}
+          <nav className="flex flex-col overflow-y-auto px-5 py-2 flex-1">
+            {nav.map((item) => (
+              <a
+                key={item}
+                href="#collection"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-between border-b border-mist/60 py-4 text-sm font-medium text-ink/80 hover:text-sapphire transition-colors"
+              >
+                {item}
+                <span className="text-ink/20">›</span>
+              </a>
+            ))}
+          </nav>
 
-            {/* Footer note */}
-            <div className="mt-auto border-t border-ink/10 px-5 py-5">
-              <p className="text-xs text-ink/40">Complimentary shipping &amp; lifetime warranty.</p>
-            </div>
+          <div className="border-t border-mist px-5 py-5 bg-sand/30">
+            <p className="text-2xs tracking-widest uppercase text-ink/40">Complimentary shipping &amp; lifetime warranty.</p>
           </div>
         </div>
       </div>

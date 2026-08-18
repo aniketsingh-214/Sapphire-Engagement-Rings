@@ -9,6 +9,7 @@ import UserPanel from "./components/UserPanel";
 export default function App() {
   const [drawer, setDrawer] = useState(null); // "cart" | "wishlist" | null
   const [userOpen, setUserOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <StoreProvider>
@@ -16,8 +17,10 @@ export default function App() {
         onOpenCart={() => setDrawer("cart")}
         onOpenWishlist={() => setDrawer("wishlist")}
         onOpenUser={() => setUserOpen(true)}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
       />
-      <Home />
+      <Home searchQuery={searchQuery} />
       <Footer />
 
       <Drawer open={drawer !== null} mode={drawer || "cart"} onClose={() => setDrawer(null)} />
